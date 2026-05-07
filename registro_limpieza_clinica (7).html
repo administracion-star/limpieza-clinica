@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Registro de Limpieza · Clínica Porvenir</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+  :root {
+    --teal:#00897B; --teal-dark:#00695C; --teal-light:#E0F2F1; --teal-mid:#B2DFDB;
+    --accent:#FF6F00; --red:#E53935; --text:#1A2E2C; --muted:#607D78;
+    --border:#CFE0DE; --bg:#F4FAF9; --white:#FFFFFF; --success:#2E7D32;
+    --shadow:0 2px 12px rgba(0,137,123,0.10); --radius:14px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding-bottom:40px; }
+
+  header {
+    background:linear-gradient(135deg,var(--teal-dark) 0%,var(--teal) 100%);
+    padding:20px 20px 24px; position:sticky; top:0; z-index:100;
+    box-shadow:0 4px 20px rgba(0,105,92,0.25);
+  }
+  .header-top { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .header-icon { width:42px; height:42px; background:rgba(255,255,255,0.2); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .header-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; color:#fff; line-height:1.1; }
+  .header-sub { font-size:12px; color:rgba(255,255,255,0.75); }
+  .header-code { font-size:11px; color:rgba(255,255,255,0.55); margin-top:4px; }
+
+  .nav-tabs { display:flex; background:var(--white); border-bottom:2px solid var(--border); position:sticky; top:90px; z-index:99; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+  .tab-btn { flex:1; padding:12px 6px; border:none; background:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:3px; transition:all .2s; border-bottom:3px solid transparent; margin-bottom:-2px; }
+  .tab-btn .tab-icon { font-size:18px; }
+  .tab-btn.active { color:var(--teal); border-bottom-color:var(--teal); }
+
+  .section { display:none; padding:16px; }
+  .section.active { display:block; }
+
+  .card { background:var(--white); border-radius:var(--radius); padding:16px; margin-bottom:14px; box-shadow:var(--shadow); border:1px solid var(--border); }
+  .card-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:12px; display:flex; align-items:center; gap:6px; }
+
+  .field { margin-bottom:14px; }
+  label { display:block; font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; }
+  label .req { color:var(--accent); }
+  select, input[type="text"], input[type="time"], textarea {
+    width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:10px;
+    font-family:'DM Sans',sans-serif; font-size:15px; color:var(--text); background:var(--white);
+    transition:border-color .2s,box-shadow .2s; -webkit-appearance:none; appearance:none;
+  }
+  select:focus, input:focus, textarea:focus { outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(0,137,123,0.12); }
+  textarea { min-height:70px; resize:vertical; }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  .piso-btn {
+    flex:1; padding:12px 8px; border:2px solid var(--border);
+    border-radius:12px; background:var(--white); cursor:pointer;
+    text-align:center; transition:all .18s; font-family:'DM Sans',sans-serif;
+  }
+  .piso-btn.sel { border-color:#1565C0; background:#E3F2FD; }
+  .piso-btn.sel span:first-child { color:#1565C0; }
+
+  .tipo-group { display:flex; gap:8px; }
+  .tipo-btn { flex:1; padding:14px 8px; border:2px solid var(--border); border-radius:12px; background:var(--white); cursor:pointer; text-align:center; transition:all .18s; font-family:'DM Sans',sans-serif; }
+  .tipo-btn .tipo-letter { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; display:block; }
+  .tipo-btn .tipo-desc { font-size:11px; color:var(--muted); display:block; margin-top:2px; }
+  .tipo-btn.sel-A { border-color:#1565C0; background:#E3F2FD; }
+  .tipo-btn.sel-A .tipo-letter { color:#1565C0; }
+  .tipo-btn.sel-B { border-color:#6A1B9A; background:#F3E5F5; }
+  .tipo-btn.sel-B .tipo-letter { color:#6A1B9A; }
+  .tipo-btn.sel-C { border-color:#BF360C; background:#FBE9E7; }
+  .tipo-btn.sel-C .tipo-letter { color:#BF360C; }
+
+  .sup-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .select-all-btn { font-size:12px; font-weight:600; color:var(--teal); background:var(--teal-light); border:none; border-radius:8px; padding:5px 10px; cursor:pointer; }
+  .sup-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .sup-item { display:flex; align-items:center; gap:8px; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; cursor:pointer; transition:all .15s; background:var(--white); user-select:none; }
+  .sup-item.checked { border-color:var(--teal); background:var(--teal-light); }
+  .sup-check { width:22px; height:22px; border-radius:6px; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all .15s; font-size:13px; color:transparent; }
+  .sup-item.checked .sup-check { background:var(--teal); border-color:var(--teal); color:#fff; }
+  .sup-label { font-size:13px; font-weight:500; }
+  .sup-icon { font-size:16px; }
+
+  .epp-group { display:flex; gap:8px; }
+  .epp-btn { flex:1; padding:12px; border:2px solid var(--border); border-radius:12px; background:var(--white); cursor:pointer; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; transition:all .18s; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .epp-btn.sel-si { border-color:var(--success); background:#E8F5E9; color:var(--success); }
+  .epp-btn.sel-no { border-color:var(--red); background:#FFEBEE; color:var(--red); }
+
+  .submit-btn { width:100%; padding:17px; background:linear-gradient(135deg,var(--teal),var(--teal-dark)); color:#fff; border:none; border-radius:14px; font-family:'Syne',sans-serif; font-size:17px; font-weight:700; cursor:pointer; letter-spacing:.03em; box-shadow:0 6px 20px rgba(0,137,123,0.35); transition:all .2s; margin-top:6px; }
+  .submit-btn:active { transform:scale(0.98); }
+
+  .time-display { background:var(--teal-light); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--teal-dark); font-weight:600; display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--success); color:#fff; padding:12px 24px; border-radius:50px; font-weight:600; font-size:14px; z-index:999; transition:transform .3s; white-space:nowrap; box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  .records-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .records-count { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--teal); }
+  .records-sub { font-size:12px; color:var(--muted); }
+  .export-btn { padding:8px 16px; background:var(--teal); color:#fff; border:none; border-radius:10px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; cursor:pointer; }
+  .record-card { background:var(--white); border-radius:12px; padding:14px; margin-bottom:10px; border:1px solid var(--border); border-left:4px solid var(--teal); }
+  .record-card.tipo-B { border-left-color:#6A1B9A; }
+  .record-card.tipo-C { border-left-color:#BF360C; }
+  .rec-top { display:flex; justify-content:space-between; align-items:start; margin-bottom:8px; }
+  .rec-area { font-weight:700; font-size:15px; }
+  .tipo-badge-A { background:#E3F2FD; color:#1565C0; font-size:12px; font-weight:700; padding:3px 8px; border-radius:20px; }
+  .tipo-badge-B { background:#F3E5F5; color:#6A1B9A; font-size:12px; font-weight:700; padding:3px 8px; border-radius:20px; }
+  .tipo-badge-C { background:#FBE9E7; color:#BF360C; font-size:12px; font-weight:700; padding:3px 8px; border-radius:20px; }
+  .rec-meta { font-size:12px; color:var(--muted); display:flex; gap:12px; flex-wrap:wrap; }
+  .rec-sups { font-size:12px; color:var(--text); margin-top:6px; }
+  .rec-sups span { background:var(--teal-light); border-radius:4px; padding:2px 6px; margin:2px; display:inline-block; }
+  .no-records { text-align:center; padding:40px 20px; color:var(--muted); }
+  .del-btn { background:none; border:none; color:#ccc; font-size:18px; cursor:pointer; padding:4px; line-height:1; float:right; }
+  .del-btn:hover { color:var(--red); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-icon">🏥</div>
+    <div>
+      <div class="header-title">Clínica Porvenir</div>
+      <div class="header-sub">Registro de Limpieza y Desinfección</div>
+    </div>
+  </div>
+  <div class="header-code">FT-INF-011 · Versión 2 · 2025</div>
+</header>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="showTab('registrar')" id="tab-registrar">
+    <span class="tab-icon">📋</span>Registrar
+  </button>
+  <button class="tab-btn" onclick="showTab('historial')" id="tab-historial">
+    <span class="tab-icon">📊</span>Historial
+  </button>
+</div>
+
+<!-- REGISTRAR -->
+<div class="section active" id="sec-registrar">
+  <div class="time-display">
+    <span>🕐</span><span id="live-time">Cargando hora...</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏷️ Información del Área</div>
+    <div class="field">
+      <label>Área / Servicio <span class="req">*</span></label>
+      <select id="area" onchange="updateAreaSelect()">
+        <option value="">— Selecciona un área —</option>
+        <option>Urgencias</option><option>Hospitalización</option>
+        <option>Consulta Externa</option><option>Quirófano</option>
+        <option>UCI</option><option>Laboratorio</option>
+        <option>Radiología</option><option>Farmacia</option>
+        <option>Recepción</option><option>Pasillos</option>
+        <option>Baños Generales</option><option>Cafetería</option>
+        <option>Almacén</option><option value="Otro">Otro (escribir)</option>
+      </select>
+    </div>
+    <div class="field" id="area-otro" style="display:none;">
+      <label>Especifica el área</label>
+      <input type="text" id="area-custom" placeholder="Nombre del área">
+    </div>
+
+    <!-- Piso — solo visible en Hospitalización -->
+    <div class="field" id="campo-piso" style="display:none;">
+      <label>Piso <span class="req">*</span></label>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="piso-btn" id="piso-2" onclick="selectPiso('2')">
+          <span style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;display:block;">2°</span>
+          <span style="font-size:11px;color:var(--muted);">Piso</span>
+        </button>
+        <button type="button" class="piso-btn" id="piso-4" onclick="selectPiso('4')">
+          <span style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;display:block;">4°</span>
+          <span style="font-size:11px;color:var(--muted);">Piso</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Habitación — solo visible cuando hay piso seleccionado -->
+    <div class="field" id="campo-habitacion" style="display:none;">
+      <label>Habitación <span class="req">*</span></label>
+      <select id="habitacion">
+        <option value="">— Selecciona habitación —</option>
+      </select>
+    </div>
+
+    <!-- Sección libre — visible en áreas que NO son Hospitalización -->
+    <div class="field" id="campo-seccion">
+      <label>Sección</label>
+      <input type="text" id="seccion" placeholder="Ej: Ala Norte, Pasillo A">
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div class="card-title">🕐 Horario</div>
+    <div class="field-row">
+      <div class="field">
+        <label>Hora inicio <span class="req">*</span></label>
+        <input type="time" id="hora-inicio">
+      </div>
+      <div class="field">
+        <label>Hora fin</label>
+        <input type="time" id="hora-fin">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧹 Tipo de Limpieza <span class="req">*</span></div>
+    <div class="tipo-group">
+      <button class="tipo-btn" id="btn-A" onclick="selectTipo('A')">
+        <span class="tipo-letter">A</span><span class="tipo-desc">Diaria</span>
+      </button>
+      <button class="tipo-btn" id="btn-B" onclick="selectTipo('B')">
+        <span class="tipo-letter">B</span><span class="tipo-desc">Rutinaria</span>
+      </button>
+      <button class="tipo-btn" id="btn-C" onclick="selectTipo('C')">
+        <span class="tipo-letter">C</span><span class="tipo-desc">Terminal</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🪣 Superficies limpiadas</div>
+    <div class="sup-header">
+      <span style="font-size:13px;color:var(--muted);">Toca para marcar</span>
+      <button class="select-all-btn" onclick="toggleAll()">✔ Todas</button>
+    </div>
+    <div class="sup-grid" id="sup-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">👤 Personal</div>
+    <div class="field">
+      <label>Responsable de limpieza <span class="req">*</span></label>
+      <input type="text" id="responsable" placeholder="Nombre completo">
+    </div>
+
+    <div class="field">
+      <label>Uso de EPP <span class="req">*</span></label>
+      <div class="epp-group">
+        <button class="epp-btn" id="epp-si" onclick="selectEPP('SI')">✅ SÍ</button>
+        <button class="epp-btn" id="epp-no" onclick="selectEPP('NO')">❌ NO</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Observaciones</label>
+      <textarea id="observaciones" placeholder="Novedades, productos usados, etc."></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📷 Evidencia fotográfica</div>
+    <div class="field">
+      <label>Foto del área limpiada <span style="font-size:11px;color:var(--muted);font-weight:400;">(opcional)</span></label>
+      <div id="foto-area" onclick="document.getElementById('foto-input').click()"
+        style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);">
+        <div style="font-size:36px;margin-bottom:8px;">📷</div>
+        <div style="font-size:13px;color:var(--muted);font-weight:500;">Toca para tomar o elegir una foto</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">JPG, PNG — máx. 5MB</div>
+      </div>
+      <input type="file" id="foto-input" accept="image/*" capture="environment" style="display:none;" onchange="previsualizarFoto(this)">
+    </div>
+    <div id="foto-preview" style="display:none;">
+      <img id="foto-img" style="width:100%;border-radius:10px;margin-bottom:8px;max-height:220px;object-fit:cover;">
+      <button onclick="quitarFoto()" style="width:100%;padding:8px;background:var(--teal-light);color:var(--teal-dark);border:1.5px solid var(--teal-mid);border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;">✕ Quitar foto</button>
+    </div>
+  </div>
+
+  <button class="submit-btn" onclick="guardar()">✔ Guardar Registro</button>
+</div>
+
+<!-- HISTORIAL -->
+<div class="section" id="sec-historial">
+  <div class="records-header">
+    <div>
+      <div class="records-count" id="rec-count">0</div>
+      <div class="records-sub">registros guardados</div>
+    </div>
+    <button class="export-btn" onclick="exportCSV()">⬇ Exportar CSV</button>
+  </div>
+  <div id="records-list"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPS = [
+  {id:'mesas',label:'Mesas',icon:'🪑'},{id:'mesones',label:'Mesones',icon:'🔲'},
+  {id:'pisos',label:'Pisos',icon:'⬜'},{id:'paredes',label:'Paredes',icon:'🧱'},
+  {id:'pasillos',label:'Pasillos',icon:'🚶'},{id:'cortinas',label:'Cortinas',icon:'🪟'},
+  {id:'lamparas',label:'Lámparas',icon:'💡'},{id:'banos',label:'Baños',icon:'🚽'},
+  {id:'inodoro',label:'Inodoro',icon:'🪠'},{id:'lavamanos',label:'Lavamanos',icon:'🚰'},
+  {id:'canecas',label:'Canecas',icon:'🗑️'},{id:'camillas',label:'Camillas',icon:'🛏️'},
+  {id:'puertas',label:'Puertas',icon:'🚪'},{id:'ventanas',label:'Ventanas',icon:'🪟'},
+  {id:'persianas',label:'Persianas',icon:'🎚️'},
+];
+
+let tipoSel = null, eppSel = null, allChk = false;
+let records = JSON.parse(localStorage.getItem('cp_limpieza') || '[]');
+let fotoBase64 = null;
+
+function previsualizarFoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { toast('⚠️ La foto supera 5MB'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    fotoBase64 = e.target.result;
+    document.getElementById('foto-img').src = fotoBase64;
+    document.getElementById('foto-area').style.display = 'none';
+    document.getElementById('foto-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function quitarFoto() {
+  fotoBase64 = null;
+  document.getElementById('foto-input').value = '';
+  document.getElementById('foto-img').src = '';
+  document.getElementById('foto-preview').style.display = 'none';
+  document.getElementById('foto-area').style.display = 'block';
+}
+
+function init() {
+  document.getElementById('sup-grid').innerHTML = SUPS.map(s =>
+    `<div class="sup-item" id="si-${s.id}" onclick="toggleSup('${s.id}')">
+      <div class="sup-check" id="sc-${s.id}">✓</div>
+      <span style="font-size:16px">${s.icon}</span>
+      <span class="sup-label">${s.label}</span>
+    </div>`
+  ).join('');
+  setHora(); updateClock();
+  setInterval(updateClock, 1000);
+  renderRecords();
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('live-time').textContent =
+    now.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function setHora() {
+  const now = new Date();
+  document.getElementById('hora-inicio').value =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+
+function updateAreaSelect() {
+  const val = document.getElementById('area').value;
+  const esHosp = val === 'Hospitalización';
+  const esOtro = val === 'Otro';
+
+  document.getElementById('area-otro').style.display = esOtro ? 'block' : 'none';
+  document.getElementById('campo-piso').style.display = esHosp ? 'block' : 'none';
+  document.getElementById('campo-habitacion').style.display = 'none';
+  document.getElementById('campo-seccion').style.display = esHosp ? 'none' : 'block';
+
+  // Reset piso y habitación al cambiar área
+  pisoPorcentaje = null;
+  document.getElementById('piso-2').className = 'piso-btn';
+  document.getElementById('piso-4').className = 'piso-btn';
+  document.getElementById('habitacion').innerHTML = '<option value="">— Selecciona habitación —</option>';
+}
+
+let pisoPorcentaje = null;
+
+function selectPiso(p) {
+  pisoPorcentaje = p;
+  document.getElementById('piso-2').className = 'piso-btn' + (p==='2' ? ' sel' : '');
+  document.getElementById('piso-4').className = 'piso-btn' + (p==='4' ? ' sel' : '');
+
+  const maxHab = p === '2' ? 10 : 12;
+  const sel = document.getElementById('habitacion');
+  sel.innerHTML = '<option value="">— Selecciona habitación —</option>';
+  for (let i = 1; i <= maxHab; i++) {
+    sel.innerHTML += `<option value="Habitación ${i}">Habitación ${i}</option>`;
+  }
+  document.getElementById('campo-habitacion').style.display = 'block';
+}
+
+function getSeccion() {
+  const area = document.getElementById('area').value;
+  if (area === 'Hospitalización') {
+    const piso = pisoPorcentaje ? `Piso ${pisoPorcentaje}` : '';
+    const hab = document.getElementById('habitacion').value;
+    return [piso, hab].filter(Boolean).join(' · ');
+  }
+  return document.getElementById('seccion').value.trim();
+}
+
+function getArea() {
+  const v = document.getElementById('area').value;
+  return v === 'Otro' ? document.getElementById('area-custom').value.trim() : v;
+}
+
+function toggleSup(id) { document.getElementById(`si-${id}`).classList.toggle('checked'); }
+
+function toggleAll() {
+  allChk = !allChk;
+  SUPS.forEach(s => document.getElementById(`si-${s.id}`).classList[allChk?'add':'remove']('checked'));
+  document.querySelector('.select-all-btn').textContent = allChk ? '✕ Ninguna' : '✔ Todas';
+}
+
+function getChecked() {
+  return SUPS.filter(s => document.getElementById(`si-${s.id}`).classList.contains('checked')).map(s => s.label);
+}
+
+function selectTipo(t) {
+  tipoSel = t;
+  ['A','B','C'].forEach(x => document.getElementById(`btn-${x}`).className = 'tipo-btn');
+  document.getElementById(`btn-${t}`).classList.add(`sel-${t}`);
+}
+
+function selectEPP(v) {
+  eppSel = v;
+  document.getElementById('epp-si').className = 'epp-btn' + (v==='SI'?' sel-si':'');
+  document.getElementById('epp-no').className = 'epp-btn' + (v==='NO'?' sel-no':'');
+}
+
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwWfPgTsUSdRrk5eAfb_bikM0p35R8ZOHh8-6dcxfEQ8ZzAkkXa7kghybAHPbBAi8Xy/exec';
+
+function guardar() {
+  const area = getArea();
+  const responsable = document.getElementById('responsable').value.trim();
+  const horaInicio = document.getElementById('hora-inicio').value;
+  if (!area) return toast('⚠️ Selecciona un área');
+  if (area === 'Hospitalización') {
+    if (!pisoPorcentaje) return toast('⚠️ Selecciona el piso');
+    if (!document.getElementById('habitacion').value) return toast('⚠️ Selecciona la habitación');
+  }
+  if (!responsable) return toast('⚠️ Ingresa el responsable');
+  if (!tipoSel) return toast('⚠️ Selecciona el tipo de limpieza');
+  if (!eppSel) return toast('⚠️ Indica si usó EPP');
+
+  const now = new Date();
+  const registro = {
+    id: Date.now(),
+    fecha: now.toLocaleDateString('es-CO'),
+    horaInicio,
+    horaFin: document.getElementById('hora-fin').value,
+    area,
+    seccion: getSeccion(),
+    tipo: tipoSel,
+    superficies: getChecked().join(', '),
+    epp: eppSel,
+    responsable,
+    observaciones: document.getElementById('observaciones').value.trim(),
+    foto: fotoBase64 || '',
+  };
+
+  // Guardar local siempre
+  const local = {...registro, superficies: registro.superficies};
+  records.unshift(local);
+  localStorage.setItem('cp_limpieza', JSON.stringify(records));
+
+  // Enviar a Google Sheets via formulario (evita CORS)
+  toast('⏳ Guardando en Google Sheets...');
+  const btn = document.querySelector('.submit-btn');
+  btn.disabled = true;
+
+  // Usamos un iframe oculto para enviar sin CORS
+  const iframeId = 'submit-iframe';
+  let iframe = document.getElementById(iframeId);
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = iframeId;
+    iframe.name = iframeId;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SHEETS_URL;
+  form.target = iframeId;
+  form.style.display = 'none';
+
+  // Enviar datos como campo JSON único
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'payload';
+  // Excluir foto del JSON para envío rápido — la foto va aparte si existe
+  const sinFoto = {...registro, foto: registro.foto ? '[foto adjunta]' : ''};
+  input.value = JSON.stringify(registro);
+  form.appendChild(input);
+  document.body.appendChild(form);
+
+  iframe.onload = function() {
+    toast('✅ Guardado en Google Sheets');
+    btn.disabled = false;
+    resetForm();
+    renderRecords();
+    document.body.removeChild(form);
+  };
+
+  // Timeout por si el iframe no dispara onload
+  setTimeout(() => {
+    if (btn.disabled) {
+      toast('✅ Enviado a Google Sheets');
+      btn.disabled = false;
+      resetForm();
+      renderRecords();
+      try { document.body.removeChild(form); } catch(e) {}
+    }
+  }, 4000);
+
+  form.submit();
+}
+
+function resetForm() {
+  ['area','seccion','responsable','observaciones','hora-fin'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('area-otro').style.display = 'none';
+  document.getElementById('area-custom').value = '';
+  document.getElementById('campo-piso').style.display = 'none';
+  document.getElementById('campo-habitacion').style.display = 'none';
+  document.getElementById('campo-seccion').style.display = 'block';
+  document.getElementById('habitacion').innerHTML = '<option value="">— Selecciona habitación —</option>';
+  document.getElementById('piso-2').className = 'piso-btn';
+  document.getElementById('piso-4').className = 'piso-btn';
+  pisoPorcentaje = null;
+  tipoSel = null; eppSel = null; allChk = false;
+  ['A','B','C'].forEach(x => document.getElementById(`btn-${x}`).className = 'tipo-btn');
+  document.getElementById('epp-si').className = 'epp-btn';
+  document.getElementById('epp-no').className = 'epp-btn';
+  SUPS.forEach(s => document.getElementById(`si-${s.id}`).classList.remove('checked'));
+  document.querySelector('.select-all-btn').textContent = '✔ Todas';
+  quitarFoto();
+  setHora();
+}
+
+function renderRecords() {
+  document.getElementById('rec-count').textContent = records.length;
+  const list = document.getElementById('records-list');
+  if (!records.length) {
+    list.innerHTML = '<div class="no-records"><div style="font-size:48px;margin-bottom:10px">📋</div><p>Sin registros aún.</p></div>';
+    return;
+  }
+  list.innerHTML = records.map(r => `
+    <div class="record-card tipo-${r.tipo}">
+      <button class="del-btn" onclick="delRecord(${r.id})">✕</button>
+      <div class="rec-top">
+        <div class="rec-area">${r.area}${r.seccion?` · <small>${r.seccion}</small>`:''}</div>
+        <span class="tipo-badge-${r.tipo}">Tipo ${r.tipo}</span>
+      </div>
+      <div class="rec-meta">
+        <span>📅 ${r.fecha}</span>
+        <span>🕐 ${r.horaInicio}${r.horaFin?' → '+r.horaFin:''}</span>
+        <span>👤 ${r.responsable}</span>
+        <span>🦺 EPP: ${r.epp}</span>
+      </div>
+      ${r.superficies && r.superficies.length ? `<div class="rec-sups">${(Array.isArray(r.superficies)?r.superficies:r.superficies.split(', ')).map(s=>`<span>${s}</span>`).join('')}</div>`:''}
+      ${r.observaciones?`<div style="font-size:12px;color:var(--muted);margin-top:6px">💬 ${r.observaciones}</div>`:''}
+      ${r.foto?`<img src="${r.foto}" style="width:100%;border-radius:8px;margin-top:8px;max-height:160px;object-fit:cover;">`:''}
+    </div>
+  `).join('');
+}
+
+function delRecord(id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  records = records.filter(r => r.id !== id);
+  localStorage.setItem('cp_limpieza', JSON.stringify(records));
+  renderRecords();
+}
+
+function exportCSV() {
+  if (!records.length) return toast('No hay registros para exportar');
+  const cols = ['Fecha','Hora Inicio','Hora Fin','Área','Sección','Tipo','Superficies','EPP','Responsable','Observaciones'];
+  const rows = records.map(r =>
+    [r.fecha,r.horaInicio,r.horaFin,r.area,r.seccion,r.tipo,
+     Array.isArray(r.superficies)?r.superficies.join(', '):r.superficies,
+     r.epp,r.responsable,r.observaciones]
+    .map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(',')
+  );
+  const csv = [cols.join(','),...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download = `limpieza_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function showTab(tab) {
+  ['registrar','historial'].forEach(t => {
+    document.getElementById(`sec-${t}`).classList.toggle('active', t===tab);
+    document.getElementById(`tab-${t}`).classList.toggle('active', t===tab);
+  });
+  if (tab==='historial') renderRecords();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+init();
+</script>
+</body>
+</html>
